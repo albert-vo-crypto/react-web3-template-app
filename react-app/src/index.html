@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src='https://unpkg.com/xrpl@2.1.0-beta.1'></script>
+      <script>
+      if (typeof module !== "undefined") var xrpl = require('xrpl')
+      // if (typeof module !== "undefined") var rippleLib = require('ripple-lib')
+      
+
+<script>
+            // if (typeof module !== "undefined") var xrpl = require('xrpl')
+            
+rewireLoggingToElement(
+    () => document.getElementById("log"),
+    () => document.getElementById("log-container"), true);
+
+function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
+    fixLoggingFunc('log');
+    fixLoggingFunc('debug');
+    fixLoggingFunc('warn');
+    fixLoggingFunc('error');
+    fixLoggingFunc('info');
+
+    function fixLoggingFunc(name) {
+        console['old' + name] = console[name];
+        console[name] = function(...arguments) {
+            const output = produceOutput(name, arguments);
+            const eleLog = eleLocator();
+
+            if (autoScroll) {
+                const eleContainerLog = eleOverflowLocator();
+                const isScrolledToBottom = eleContainerLog.scrollHeight - eleContainerLog.clientHeight <= eleContainerLog.scrollTop + 1;
+                eleLog.innerHTML += output + "<br>";
+                if (isScrolledToBottom) {
+                    eleContainerLog.scrollTop = eleContainerLog.scrollHeight - eleContainerLog.clientHeight;
+                }
+            } else {
+                eleLog.innerHTML += output + "<br>";
+            }
+
+            console['old' + name].apply(undefined, arguments);
+        };
+    }
+
+    function produceOutput(name, args) {
+        return args.reduce((output, arg) => {
+            return output +
+                "<span class=\"log-" + (typeof arg) + " log-" + name + "\">" +
+                    (typeof arg === "object" && (JSON || {}).stringify ? JSON.stringify(arg) : arg) +
+                "</span>&nbsp;";
+        }, '');
+    }
+}
+
+</script>
+
+
+      <title>Split Screen</title>
+
+      <link href="normalize.css" rel="stylesheet">
+      <link href="style.css" rel="stylesheet">
+
+      <link rel="preconnect" href="https://fonts.gstatic.com">
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&display=swap" rel="stylesheet">
+      <div id="like_button_container"></div>
+</head>
+<body>
+
+
+      <div class="wrapper">
+
+            <div class="side left">
+                  <div class="image ripple"></div>
+                  <div class="caption">
+                        <h1>Ripple</h1>
+                        <a class="button" href="#">Ripple Coin</a>
+                  </div>
+            </div>
+
+            // <div class="side right">
+            //       <div class="image solana"></div>
+            //       <div class="caption">
+            //             <h1>Solana</h1>
+
+            //       </div>
+            // </div>
+      </div>
+      <div id="log-container">
+            <pre id="log"></pre>
+          </div>
+                  <!-- Load React. -->
+      <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+      <script src="https://unpkg.com/react@17/umd/react.development.js" crossorigin></script>
+      <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js" crossorigin></script>
+
+      <!-- Load our React component. -->
+      <script src="like_button.js"></script>
+            <h1>XRPL NFT Seller Wallet</h1>
+      <form id="theForm">
+
+      <table>
+      <tr>
+      <td align="right">Account</td>
+      <td><input type="text" id="account" value=""  size="40" /></td>
+      </tr>
+      <tr>
+      <td align="right">Secret</td>
+      <td><input type="text" id="secret1" value="" size="40" /></td>
+      </tr>
+      <tr>
+      <td align="right">Token URL</td>
+      <td><input type="text" id="tokenUrl"
+      value = "ipfs://bafybeigdyrzt5sfp7udm7hu76uh7y26nf4dfuylqabf3oclgtqy55fbzdi" size="80"/>
+      </td>
+      </tr>
+      <tr>
+      <td align="right">Flags</td>
+      <td><input type="text" id="flags" value="1" size="10"/></td>
+      </tr>
+      <tr>
+      <td align="right">Token ID</td>
+      <td><input type="text" id="tokenId" value="" size="80"/></td>
+      </tr>
+      <tr>
+      <td align="right">Balance</td>
+      <td><input type="text" id="balance1" value="" size="20"/></td>
+      </tr>
+      <tr>
+      <td align="right">Amount (Sell/Buy Offer</td>
+      <td><input type="text" id="amount" value="" size="20"/></td>
+      </tr>
+      <tr>
+      <td align="right">Token Offer Index</td>
+      <td><input type="text" id="tokenOfferIndex" value="" size="80"/></td>
+      </tr>
+      <tr>
+      <td align="right">Owner</td>
+      <td><input type="text" id="owner" value="" size="80"/></td>
+      </tr>
+      </table>
+      <p>
+      <button type="button" onClick="getAccountInfo()">Get Account Info4</button>&nbsp;&nbsp;
+      <button type="button" onClick="mintToken()">Mint Token</button>&nbsp;&nbsp;
+      <button type="button" onClick="getTokens()">Get Tokens</button>&nbsp;&nbsp;
+      <button type="button" onClick="burnToken()">Burn Token</button>&nbsp;&nbsp;
+      </p>
+      <p>
+      <button type="button" onClick="createSellOffer()">Create Sell Offer</button>&nbsp;&nbsp;
+      <button type="button" onClick="createBuyOffer()">Create Buy Offer</button>&nbsp;&nbsp;
+      <button type="button" onClick="getOffers()">Get Offers</button>
+      </p>
+      <p>
+      <button type="button" onClick="acceptSellOffer()">Accept Sell Offer</button>&nbsp;&nbsp;
+      <button type="button" onClick="acceptBuyOffer()">Accept Buy Offer</button>&nbsp;&nbsp;
+      <button type="button" onClick="cancelOffer()">Cancel Offer</button>&nbsp;&nbsp;
+      </p>
+      </form>
+</body>
+</html>
